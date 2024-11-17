@@ -1,0 +1,59 @@
+/* General Reset */
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: linear-gradient(135deg, #74ebd5, #9face6);
+}
+
+/* Game Container */
+.game-container {
+    text-align: center;
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+h1 {
+    font-size: 2rem;
+    color: #4CAF50;
+}
+
+p {
+    font-size: 1rem;
+    color: #333;
+}
+
+/* Game Area */
+.game-area {
+    position: relative;
+    width: 300px;
+    height: 300px;
+    border: 2px solid #333;
+    margin: 20px auto;
+    overflow: hidden;
+    background: #f9f9f9;
+    border-radius: 10px;
+}
+
+/* Moving Square */
+.moving-square {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    background-color: #FF5722;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: top 0.5s ease, left 0.5s ease;
+}
+
+/* Score Display */
+.score {
+    font-size: 1.5rem;
+    color: #333;
+    margin-top: 10px;
+}
