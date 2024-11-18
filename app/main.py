@@ -1,6 +1,12 @@
 from flask import Flask, render_template_string
+from flask_wtf.csrf import CSRFProtect
 
+# Flask application instance
 app = Flask(__name__)
+
+# Enable CSRF protection
+app.config['SECRET_KEY'] = 'VzUbeqxdRU3PMUmw4XYlkcym'  # Make sure to set a strong secret key
+csrf = CSRFProtect(app)
 
 @app.route('/')
 def hello():
