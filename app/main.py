@@ -1,64 +1,92 @@
-import pygame
-import random
 import sys
+import random
+import os
+from wsgiref.simple_server import make_server
 
-# Initialize Pygame
-pygame.init()
+# Function to generate the HTML page for the game
+def generate_html():
+    return """
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Catch the Square Game</title>
+        <style>
+            body {
+                text-align: center;
+                font-family: Arial, sans-serif;
+                background-color: #f0f0f0;
+            }
+            canvas {
+                border: 1px solid black;
+                background-color: white;
+                margin-top: 20px;
+            }
+        </style>
+    </head>
+    <body>
 
-# Set up display
-WIDTH, HEIGHT = 600, 400
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("Catch the Square")
+    <h1>Catch the Square Game</h1>
+    <p id="score">Score: 0</p>
+    <canvas id="gameCanvas" width="600" height="400"></canvas>
 
-# Colors
-WHITE = (255, 255, 255)
-RED = (255, 0, 0)
-BLACK = (0, 0, 0)
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const squareSize = 50;
+        let score = 0;
+        let squareX = Math.random() * (canvas.width - squareSize);
+        let squareY = Math.random() * (canvas.height - squareSize);
 
-# Game variables
-square_size = 50
-score = 0
-font = pygame.font.SysFont(None, 36)
+        // Function to update the score on the screen
+        function updateScore() {
+            document.getElementById('score').innerText = "Score: " + score;
+        }
 
-# Function to display the score
-def display_score():
-    score_text = font.render(f"Score: {score}", True, BLACK)
-    screen.blit(score_text, (10, 10))
+        // Function to move square to a random position
+        function moveSquare() {
+            squareX = Math.random() * (canvas.width - squareSize);
+            squareY = Math.random() * (canvas.height - squareSize);
+        }
 
-# Function to move the square to a random position
-def move_square():
-    return random.randint(0, WIDTH - square_size), random.randint(0, HEIGHT - square_size)
+        // Game loop to render the game
+        function gameLoop() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
+            ctx.fillStyle = 'red';
+            ctx.fillRect(squareX, squareY, squareSize, squareSize); // Draw the square
 
-# Main game loop
-def game_loop():
-    global score
-    clock = pygame.time.Clock()
-    square_x, square_y = move_square()
+            updateScore(); // Update the score on the page
+        }
 
-    # Main game loop
-    while True:
-        screen.fill(WHITE)  # Fill the screen with white
-        display_score()  # Display the score
+        // Mouse click handler
+        canvas.addEventListener('click', (event) => {
+            const mouseX = event.offsetX;
+            const mouseY = event.offsetY;
 
-        # Draw the square
-        pygame.draw.rect(screen, RED, (square_x, square_y, square_size, square_size))
+            // Check if the square is clicked
+            if (mouseX >= squareX && mouseX <= squareX + squareSize &&
+                mouseY >= squareY && mouseY <= squareY + squareSize) {
+                score++;  // Increment score
+                moveSquare();  // Move square to a new random position
+            }
+        });
 
-        # Event handling
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
+        // Run the game loop at 30 FPS
+        setInterval(gameLoop, 1000 / 30);
+    </script>
 
-            # Check for mouse click to catch the square
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                mouse_x, mouse_y = pygame.mouse.get_pos()
-                if square_x <= mouse_x <= square_x + square_size and square_y <= mouse_y <= square_y + square_size:
-                    score += 1
-                    square_x, square_y = move_square()  # Move the square to a new random position
+    </body>
+    </html>
+    """
+# WSGI application
+def application(environ, start_response):
+    # Serve the HTML content
+    start_response('200 OK', [('Content-Type', 'text/html')])
+    return [generate_html().encode('utf-8')]
 
-        pygame.display.update()  # Update the display
-        clock.tick(30)  # Set the frame rate to 30 frames per second
-
-# Run the game
-if __name__ == "__main__":
-    game_loop()
+# Run the server (for testing purpose, this is not used in production with Apache)
+if __name__ == '__main__':
+    httpd = make_server('', 8000, application)
+    print("Serving on port 8000...")
+    httpd.serve_forever()
