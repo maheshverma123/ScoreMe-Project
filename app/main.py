@@ -11,7 +11,7 @@ csrf = CSRFProtect(app)
 @app.route('/')
 def hello():
     """Handles the root route and returns a greeting."""
-    return render_template_string("<h1>Hello, World!</h1>")
+    return render_template_string("<h1>Hello, Wo</h1>")
 
 if __name__ == '__main__':
     # Ensure the app runs on port 80 and binds to all available interfaces
